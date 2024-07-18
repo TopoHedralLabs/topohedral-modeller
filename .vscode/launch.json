@@ -1,0 +1,45 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "lldb", 
+            "request": "launch",
+            "name": "All Unit Tests",
+            "cargo": {
+                "args": [
+                    "test", 
+                    "--lib",
+                    "--no-run",
+                    "--package=topohedral-modeller"
+                ], 
+                "filter": {
+                    "name": "topohedral-modeller",
+                    "kind": "lib",
+                }
+            },
+            "args": [], 
+            "cwd": "${workspaceFolder}", 
+            "sourceLanguages": ["rust"]
+        }, 
+        {
+            "type": "lldb", 
+            "request": "launch",
+            "name": "Single Unit Tests",
+            "cargo": {
+                "args": [
+                    "test", 
+                    "--lib",
+                    "--no-run",
+                    "--package=topohedral-modeller"
+                ], 
+                "filter": {
+                    "name": "topohedral-modeller",
+                    "kind": "lib",
+                }
+            },
+            "args": ["normal_d3_p2"],
+            "cwd": "${workspaceFolder}", 
+            "sourceLanguages": ["rust"]
+        }
+    ]
+}
