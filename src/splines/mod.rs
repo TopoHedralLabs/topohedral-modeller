@@ -32,7 +32,7 @@ fn knot_gt(
 }
 //..............................................................................................
 
-/// Tolerant equal for knots
+/// Checks if two floating-point values are considered equal within a tolerance.
 pub fn knot_eq(
     u1: f64,
     u2: f64,
@@ -42,6 +42,19 @@ pub fn knot_eq(
 }
 //..............................................................................................
 
+/// Finds the upper bound index for a given value in a sorted array of floating-point numbers.
+///
+/// This function uses a binary search algorithm to find the insertion point for `value` in `arr`.
+/// It takes into account the custom comparison function `knot_lt` for floating-point values.
+///
+/// # Parameters
+///
+/// - `arr`: A slice of f64 values, assumed to be sorted in ascending order.
+/// - `value`: The f64 value to find the upper bound for.
+///
+/// # Returns
+///
+/// The index where `value` should be inserted to maintain sorted order.
 fn upper_bound(
     arr: &[f64],
     value: f64,
@@ -61,6 +74,19 @@ fn upper_bound(
 }
 //..............................................................................................
 
+/// Checks if a given parameter value is within the range of the knot vector.
+///
+/// This function determines whether a parameter value `u` is within the range defined by the
+/// knot vector, using tolerant comparisons for floating-point values.
+///
+/// # Parameters
+///
+/// - `knots`: A slice of f64 values representing the knot vector.
+/// - `u`: The parameter value to check for membership.
+///
+/// # Returns
+///
+/// Returns `true` if `u` is within the range of the knot vector, `false` otherwise.
 pub fn is_member(
     knots: &[f64],
     u: f64,
@@ -72,6 +98,21 @@ pub fn is_member(
 }
 //..............................................................................................
 
+/// Finds the index of the knot vector that contains the given parameter value `u`.
+///
+/// This function determines the index of the knot vector that contains the given parameter value `u`,
+/// assuming the knot vector is sorted in ascending order. It uses a binary search algorithm to
+/// efficiently locate the appropriate index.
+///
+/// # Parameters
+///
+/// - `knots`: A slice of `f64` values representing the knot vector.
+/// - `u`: The parameter value to find the containing knot vector index for.
+/// - `p`: The degree of the spline.
+///
+/// # Returns
+///
+/// The index of the knot vector that contains the given parameter value `u`.
 pub fn find_span(
     knots: &[f64],
     u: f64,
@@ -95,6 +136,21 @@ pub fn find_span(
 }
 //..............................................................................................
 
+/// Finds the indices of the non-zero basis functions for the given parameter value `u`.
+///
+/// This function determines the indices of the non-zero basis functions for the given parameter value `u`,
+/// assuming the knot vector is sorted in ascending order. It uses the `find_span` function to efficiently
+/// locate the appropriate index range.
+///
+/// # Parameters
+///
+/// - `knots`: A slice of `f64` values representing the knot vector.
+/// - `u`: The parameter value to find the non-zero basis function indices for.
+/// - `p`: The degree of the spline.
+///
+/// # Returns
+///
+/// A tuple containing the start index, end index, and the number of non-zero basis functions.
 pub fn non_zero_basis(
     knots: &[f64],
     u: f64,
@@ -114,6 +170,23 @@ pub fn non_zero_basis(
 }
 //..............................................................................................
 
+/// Evaluates the B-spline basis functions for the given parameter value `u`.
+///
+/// This function computes the values of the B-spline basis functions for the given parameter value `u`,
+/// assuming the knot vector is sorted in ascending order. It uses the `find_span` function to efficiently
+/// locate the appropriate index range.
+///
+/// # Parameters
+///
+/// - `knots`: A slice of `f64` values representing the knot vector.
+/// - `u`: The parameter value to evaluate the basis functions for.
+/// - `p`: The degree of the spline.
+/// - `shape_funs`: A mutable slice of `f64` values to store the computed basis function values.
+///
+/// # Panics
+///
+/// - If `shape_funs.len() < p + 1`, indicating the buffer is too small to hold the results.
+/// - If `u` is not a member of the parameter range defined by the knot vector.
 pub fn eval(
     knots: &[f64],
     u: f64,
@@ -157,6 +230,21 @@ pub fn eval(
 }
 //..............................................................................................
 
+/// Evaluates the derivatives of the B-spline basis functions up to the `k`-th order.
+///
+/// # Parameters
+///
+/// - `knots`: The knot vector.
+/// - `u`: The parameter value at which to evaluate the derivatives.
+/// - `p`: The degree of the spline.
+/// - `k`: The order of the derivative to compute.
+/// - `shape_ders`: A mutable slice to store the computed basis function derivatives.
+///
+/// # Panics
+///
+/// - If `u` is not a member of the parameter range defined by the knot vector.
+/// - If `p` exceeds the maximum allowable order (`PMAX`).
+/// - If the length of `shape_ders` is less than `(p + 1)`, indicating the buffer is too small to hold the results.
 pub fn eval_diff(
     knots: &[f64],
     u: f64,
