@@ -1,4 +1,3 @@
-use topohedral_viewer::{run_minimal_2d, run_minimal_3d};
 
 // re-exports 
 pub use topohedral_viewer::{Color, d2, d3};
@@ -22,13 +21,3 @@ pub use view_bcurve::{BcurveViewOptions, CtrlPointOptions};
 mod view_plane;
 pub use view_plane::{PlaneViewOptions};
 //..................................................................................................
-
-pub fn run_viewer_2d(state: d2::State<'static>)
-{
-    pollster::block_on(run_minimal_2d(state));
-}
-
-pub fn run_viewer_3d(state: d3::State<'static>)
-{
-    pollster::block_on(run_minimal_3d(state));
-}

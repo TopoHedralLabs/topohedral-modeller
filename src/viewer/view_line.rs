@@ -27,7 +27,7 @@ impl<const D: usize> Viewable3D for Line<D>
     type Options = LineViewOptions;
     fn view(
         &mut self,
-        state: &mut State,
+        port: usize,
         options: &LineViewOptions,
     )
     {
@@ -56,10 +56,10 @@ impl<const D: usize> Viewable3D for Line<D>
             _ => Color::default(),
         };
 
-        state.add_line(&LineDescriptor {
-            p1: p1_f32,
-            p2: p2_f32,
-            color: line_color,
-        });
+        // state.add_line(&LineDescriptor {
+        //     p1: p1_f32,
+        //     p2: p2_f32,
+        //     color: line_color,
+        // });
     }
 }

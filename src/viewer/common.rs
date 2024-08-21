@@ -105,6 +105,6 @@ pub trait Viewable3D {
     /// 
     /// It does so by: 
     /// - Creating a mesh representation of the object, there can be many such meshes
-    /// - Adding each mesh to the state object so that it can be rendered
-    fn view(&mut self, state: &mut d3::State, opts: &Self::Options);
+    /// - Sending the mesh to the viewer via grpc which is listening on the given port
+    fn view(&mut self, port: usize, opts: &Self::Options);
 }   

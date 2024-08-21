@@ -5,7 +5,7 @@ use topohedral_modeller::common::Vec3;
 use topohedral_modeller::geometry::{Bcurve, BcurveDescriptor, Curve, Line, LineDescriptor, Plane, PlaneDescriptor};
 #[cfg(feature = "viewer")]
 use topohedral_modeller::viewer::{
-    run_viewer_3d, ABoxViewOptions, BcurveViewOptions, Color, CtrlPointOptions, CurveColor,
+    ABoxViewOptions, BcurveViewOptions, Color, CtrlPointOptions, CurveColor,
     CurveViewMethod, d3, Viewable3D, LineViewOptions, PlaneViewOptions, SurfaceColor
 };
 
@@ -13,8 +13,6 @@ fn line_view()
 {
     #[cfg(feature = "viewer")]
     {
-        let mut state = d3::State::new();
-
         let mut line = Line::new(&LineDescriptor {
             origin: Vec3::new(0.0, 0.0, 0.0),
             dir: Vec3::new(1.0, 1.0, 1.0).normalize(),
@@ -26,8 +24,7 @@ fn line_view()
             color: CurveColor::Solid(Color::Red),
         };
 
-        line.view(&mut state, &line_opts);
-        run_viewer_3d(state)
+        line.view(50051, &line_opts);
     }
 }
 
@@ -35,7 +32,6 @@ fn bcurve_view()
 {
     #[cfg(feature = "viewer")]
     {
-        let mut state = d3::State::new();
 
         let mut bcurve = Bcurve::new(&BcurveDescriptor {
             p: 2,
@@ -61,15 +57,13 @@ fn bcurve_view()
             with_ctrl_pts: CtrlPointOptions::NoPts,
         };
 
-        bcurve.view(&mut state, &bcurve_opts);
+        bcurve.view(50051, &bcurve_opts);
 
         let abox_opts = ABoxViewOptions {
             color: Color::White,
         };
         let mut abox = bcurve.get_box().clone();
-        abox.view(&mut state, &abox_opts);
-
-        run_viewer_3d(state)
+        abox.view(50051, &abox_opts);
     }
 }
 
@@ -94,9 +88,7 @@ fn plane_view()
             y_max: 2.0, 
             color: SurfaceColor::Solid(Color::Blue),
         };
-        plane.view(&mut state, &plane_opts);
-
-        run_viewer_3d(state)
+        plane.view(50051, &plane_opts);
     }
 }
 

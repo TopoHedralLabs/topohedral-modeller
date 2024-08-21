@@ -25,7 +25,7 @@ impl Viewable3D for Plane
 {
     type Options = PlaneViewOptions;
 
-    fn view(&mut self, state: &mut State, opts: &Self::Options) {
+    fn view(&mut self, port: usize, opts: &Self::Options) {
 
         let plane_disc = PlaneDescriptor {
             origin: self.origin().convert(),
@@ -45,6 +45,6 @@ impl Viewable3D for Plane
             }, 
         };
 
-        state.add_plane(&plane_disc);
+        // state.add_plane(&plane_disc);
     }
 }

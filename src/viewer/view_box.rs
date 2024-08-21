@@ -15,7 +15,7 @@ impl Viewable3D for ABox
     type Options = ABoxViewOptions;
     fn view(
         &mut self,
-        state: &mut State,
+        port: usize,
         opts: &Self::Options,
     )
     {
@@ -107,6 +107,6 @@ impl Viewable3D for ABox
             mesh.append_indices(&[7, 4]);
         }
 
-        state.add_mesh(mesh);
+        // state.add_mesh(mesh);
     }
 }

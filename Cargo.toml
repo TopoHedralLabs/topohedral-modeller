@@ -4,7 +4,7 @@ version = "0.0.0"
 edition = "2021"
 
 [features]
-viewer = ["pollster", "topohedral-viewer"]   
+viewer = ["topohedral-viewer"]   
 
 [toolchain]
 channel = "nightly"
@@ -17,8 +17,9 @@ static_assertions = "1.1.0"
 approx = "0.5.1"
 criterion = "0.3"
 num-traits = "0.2.19"
-pollster = {version = "0.3.0", optional = true}
 topohedral-optimisation = {path = "../topohedral-optimisation"} 
 topohedral-integrate = {path = "../topohedral-integrate"}
 topohedral-viewer = {path = "../topohedral-viewer", optional = true}
+topohedral-tracing = {path = "../topohedral-tracing"}
 thiserror = "1.0.61"
+log = "0.4.21"

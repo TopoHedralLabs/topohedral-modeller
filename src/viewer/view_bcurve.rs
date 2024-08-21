@@ -53,7 +53,7 @@ where
     /// This method renders the B-curve with greater sampling density on areas of high curvature.
     fn view_curvature(
         &mut self,
-        state: &mut State,
+        port: usize,
         opts: &BcurveViewOptions,
     )
     {
@@ -64,7 +64,7 @@ where
     /// space
     fn view_uniform(
         &mut self,
-        state: &mut State,
+        port: usize,
         opts: &BcurveViewOptions,
     )
     {
@@ -109,8 +109,8 @@ where
             mesh.append_indices(&[i as u32, (i + 1) as u32])
         }
 
-        let cmesh_uid = state.add_mesh(mesh);
-        let mut param_pts_uids = Vec::new();
+        // let cmesh_uid = state.add_mesh(mesh);
+        let mut param_pts_uids = Vec::<usize>::new();
 
         //..........  com: add point glyphs to show endpoints of segments
         if opts.with_param_pts {
@@ -131,24 +131,24 @@ where
                 let dx = (cub_len / 2.0) * Vec3f32::new(1.0, 1.0, 1.0);
                 let cub_origin = point.convert() - dx;
 
-                let uid = state.add_cuboid(&CuboidDescriptor {
-                    origin: cub_origin,
-                    x: Vec3f32::x(),
-                    y: Vec3f32::y(),
-                    z: Vec3f32::z(),
-                    lenx: cub_len,
-                    leny: cub_len,
-                    lenz: cub_len,
-                    line_color: Color::default(),
-                    tri_color: Color::default(),
-                });
-                param_pts_uids.push(uid);
+                // let uid = state.add_cuboid(&CuboidDescriptor {
+                //     origin: cub_origin,
+                //     x: Vec3f32::x(),
+                //     y: Vec3f32::y(),
+                //     z: Vec3f32::z(),
+                //     lenx: cub_len,
+                //     leny: cub_len,
+                //     lenz: cub_len,
+                //     line_color: Color::default(),
+                //     tri_color: Color::default(),
+                // });
+                // param_pts_uids.push(uid);
                 u += du;
             }
         }
 
         // .......... com add vertex colours
-        match &opts.color 
+        /*match &opts.color 
         {
             CurveColor::Solid(c) => {
                 let mut cmesh = state.get_mesh_mut(cmesh_uid).unwrap();
@@ -189,20 +189,20 @@ where
             CurveColor::PositionFunction(f) => {
 
             },
-        }
+        }*/
 
 
 
         if let CtrlPointOptions::WithPts(color) = opts.with_ctrl_pts
         {
-            self.view_control_points(state, &color, abox_diam as f32)
+            self.view_control_points(port, &color, abox_diam as f32)
         }
     }
 
     /// This method visualises the control points of the B-curve.
     fn view_control_points(
         &self,
-        state: &mut State,
+        port: usize,
         color: &Color,
         abox_diam: f32,
     )
@@ -238,24 +238,24 @@ where
             let cub_len = abox_diam as f32 / (30.0 * n_ctrl_pts as f32);
             let dx = (cub_len / 2.0) * Vec3f32::new(1.0, 1.0, 1.0);
             let mut cub_origin = pos - dx;
-            state.add_cuboid(&CuboidDescriptor {
-                origin: cub_origin,
-                x: Vec3f32::x(),
-                y: Vec3f32::y(),
-                z: Vec3f32::z(),
-                lenx: cub_len,
-                leny: cub_len,
-                lenz: cub_len,
-                line_color: *color,
-                tri_color: *color,
-            });
+            // state.add_cuboid(&CuboidDescriptor {
+            //     origin: cub_origin,
+            //     x: Vec3f32::x(),
+            //     y: Vec3f32::y(),
+            //     z: Vec3f32::z(),
+            //     lenx: cub_len,
+            //     leny: cub_len,
+            //     lenz: cub_len,
+            //     line_color: *color,
+            //     tri_color: *color,
+            // });
         }
 
         for i in 0..n_ctrl_pts - 1
         {
             mesh.append_indices(&[i as u32, (i + 1) as u32])
         }
-        state.add_mesh(mesh);
+        // state.add_mesh(mesh);
     }
 }
 
@@ -270,14 +270,14 @@ where
 
     fn view(
         &mut self,
-        state: &mut State,
+        port: usize,
         opts: &Self::Options,
     )
     {
         match opts.method
         {
-            CurveViewMethod::Uniform => self.view_uniform(state, opts),
-            CurveViewMethod::Curvature => self.view_curvature(state, opts),
+            CurveViewMethod::Uniform => self.view_uniform(port, opts),
+            CurveViewMethod::Curvature => self.view_curvature(port, opts),
         };
     }
 }
