@@ -3,7 +3,7 @@ use std::thread::panicking;
 
 use topohedral_viewer::{
     d3::{CuboidDescriptor, LineDescriptor, PlaneDescriptor, Mesh, State, State3D, Vertex, VertexDescriptor},
-    Color, Colormap, ColormapError,
+    Color, Colormap, ColormapError, CellType
 };
 
 use crate::boxing::ABoxable;
@@ -43,6 +43,7 @@ impl Viewable3D for Plane
                 SurfaceColor::Solid(color) => color,
                 _ => Color::default(),
             }, 
+            cell_type: CellType::Triangle
         };
 
         // state.add_plane(&plane_disc);

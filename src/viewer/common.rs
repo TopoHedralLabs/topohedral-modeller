@@ -88,7 +88,7 @@ pub trait Viewable2D {
     /// It does so by: 
     /// - Creating a mesh representation of the object, there can be many such meshes
     /// - Adding each mesh to the state object so that it can be rendered
-    fn view(&mut self, state: &mut d2::State, opts: &Self::Options);
+    fn view(&mut self, port: usize, opts: &Self::Options);
 }   
 
 /// Any type which implements this trait can be viewed in the viewer
