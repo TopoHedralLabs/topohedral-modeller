@@ -5,6 +5,7 @@ edition = "2021"
 
 [features]
 viewer = ["topohedral-viewer"]   
+enable_trace = ["topohedral-tracing/enable_trace"]
 
 [toolchain]
 channel = "nightly"
