@@ -1,16 +1,27 @@
+//! Short Description of module
+//!
+//! Longer description of module
+//--------------------------------------------------------------------------------------------------
 
-use std::thread::panicking;
-
-use topohedral_viewer::{
-    d3::{CuboidDescriptor, LineDescriptor, PlaneDescriptor, Mesh, State, State3D, Vertex, VertexDescriptor},
-    Color, Colormap, ColormapError, CellType
-};
-
+//{{{ crate imports 
 use crate::boxing::ABoxable;
 use crate::common::{Vec3, Vector};
 use crate::geometry::{Plane};
 use crate::utilities::normalize_min_max;
 use crate::viewer::common::{Vec3f32, Vecf64ToVecf32, Viewable3D, CurveColor, SurfaceColor};
+//}}}
+//{{{ std imports 
+use std::thread::panicking;
+//}}}
+//{{{ dep imports 
+use topohedral_viewer::{Color, CellType, d3::Client3D, d3::PlaneDescriptor};
+use topohedral_tracing::*;
+//}}}
+//--------------------------------------------------------------------------------------------------
+
+
+
+
 
 
 pub struct PlaneViewOptions {
@@ -46,6 +57,16 @@ impl Viewable3D for Plane
             cell_type: CellType::Triangle
         };
 
-        // state.add_plane(&plane_disc);
+
+        match Client3D::new(port) {
+            Ok(mut client) => {
+                client.add_plane(plane_disc);
+            }
+            Err(e) => {
+                //{{{ trace
+                error!("Failed to connect to client: {}", e);
+                //}}}
+            }
+        }
     }
 }
