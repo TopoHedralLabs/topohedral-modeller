@@ -1,5 +1,6 @@
 {
     "rust-analyzer.showUnlinkedFileNotification": false,
     "rust-analyzer.debug.engine": "vadimcn.vscode-lldb", 
-    "rust-analyzer.cargo.features": ["viewer"]
+    "rust-analyzer.cargo.features": ["viewer", "enable_trace"], 
+    "editor.defaultFoldingRangeProvider": "TopoHedralLabs.topohedral-vscode"
 }
