@@ -1,16 +1,26 @@
+//! This module contains the code for viewing a 2D and 3D box.
+//!
+//! 
+//--------------------------------------------------------------------------------------------------
+
+//{{{ crate imports 
 use crate::boxing::ABox;
-
-use topohedral_viewer::{Color, d3::{State3D,CuboidDescriptor, Mesh, State, Vertex, VertexDescriptor}, Colormap, ColormapError};
-
-use super::common::{Vec3f32, Vecf64ToVecf32, Viewable3D};
-use crate::common::Vec3;
+use super::common::{tv ,Viewable, Convert};
+//}}}
+//{{{ std imports 
+//}}}
+//{{{ dep imports 
+use topohedral_viewer::{Color, CellType, d3::Client3D, d3::Mesh3D, d3::Mesh, d3::CuboidDescriptor};
+use topohedral_tracing::*;
+//}}}
+//--------------------------------------------------------------------------------------------------
 
 pub struct ABoxViewOptions
 {
     pub color: Color,
 }
 
-impl Viewable3D for ABox
+impl Viewable for ABox<3>
 {
     type Options = ABoxViewOptions;
     fn view(
@@ -19,94 +29,40 @@ impl Viewable3D for ABox
         opts: &Self::Options,
     )
     {
-        let color = opts.color;
-        let normal = Vec3f32::zeros();
-        let xmin = self.xmin();
-        let xmax = self.xmax();
-        let ymin = self.ymin();
-        let ymax = self.ymax();
-        let zmin = self.zmin();
-        let zmax = self.zmax();
-        let v0 = Vec3::new(xmin, ymin, zmin);
-        let v1 = Vec3::new(xmax, ymin, zmin);
-        let v2 = Vec3::new(xmax, ymax, zmin);
-        let v3 = Vec3::new(xmin, ymax, zmin);
 
-        let num_lines = 12;
-        let mut mesh = Mesh::from_num_lines(num_lines);
+        let mesh = Mesh::create_cuboid(&CuboidDescriptor{
+            origin: self.origin().convert(), 
+            x_axis: tv::Vec3::x(), 
+            y_axis: tv::Vec3::y(),
+            z_axis: tv::Vec3::z(),
+            lenx: self.length(0) as f32, 
+            leny: self.length(1) as f32,
+            lenz: self.length(2) as f32,
+            line_color: opts.color,
+            tri_color: opts.color,  
+            cell_type: CellType::Line,
+        });
 
-        mesh.append_vertex(&Vertex::new(&VertexDescriptor {
-            position: v0.convert(),
-            normal: normal,
-            line_color: color,
-            triangle_color: color,
-        }));
-        mesh.append_vertex(&Vertex::new(&VertexDescriptor {
-            position: v1.convert(),
-            normal: normal,
-            line_color: color,
-            triangle_color: color,
-        }));
-        mesh.append_vertex(&Vertex::new(&VertexDescriptor {
-            position: v2.convert(),
-            normal: normal,
-            line_color: color,
-            triangle_color: color,
-        }));
-        mesh.append_vertex(&Vertex::new(&VertexDescriptor {
-            position: v3.convert(),
-            normal: normal,
-            line_color: color,
-            triangle_color: color,
-        }));
-
-        mesh.append_indices(&[0, 1]);
-        mesh.append_indices(&[1, 2]);
-        mesh.append_indices(&[2, 3]);
-        mesh.append_indices(&[3, 0]);
-
-        if self.is_3d()
-        {
-            let v4 = Vec3::new(xmin, ymin, zmax);
-            let v5 = Vec3::new(xmax, ymin, zmax);
-            let v6 = Vec3::new(xmax, ymax, zmax);
-            let v7 = Vec3::new(xmin, ymax, zmax);
-
-            mesh.append_vertex(&Vertex::new(&VertexDescriptor {
-                position: v4.convert(),
-                normal: normal,
-                line_color: color,
-                triangle_color: color,
-            }));
-            mesh.append_vertex(&Vertex::new(&VertexDescriptor {
-                position: v5.convert(),
-                normal: normal,
-                line_color: color,
-                triangle_color: color,
-            }));
-            mesh.append_vertex(&Vertex::new(&VertexDescriptor {
-                position: v6.convert(),
-                normal: normal,
-                line_color: color,
-                triangle_color: color,
-            }));
-            mesh.append_vertex(&Vertex::new(&VertexDescriptor {
-                position: v7.convert(),
-                normal: normal,
-                line_color: color,
-                triangle_color: color,
-            }));
-
-            mesh.append_indices(&[0, 4]);
-            mesh.append_indices(&[1, 5]);
-            mesh.append_indices(&[2, 6]);
-            mesh.append_indices(&[3, 7]);
-            mesh.append_indices(&[4, 5]);
-            mesh.append_indices(&[5, 6]);
-            mesh.append_indices(&[6, 7]);
-            mesh.append_indices(&[7, 4]);
-        }
-
-        // state.add_mesh(mesh);
+        match Client3D::new(port) {
+            Ok(mut client) => {
+                match client.add_mesh(mesh) {
+                    Ok(mesh_id) => {
+                        //{{{ trace
+                        info!("mesh_id: {}", mesh_id);
+                        //}}}
+                    }
+                    Err(err) => {
+                        //{{{ trace
+                        error!("Failed to add mesh with error: {}", err);
+                        //}}}
+                    }
+                }
+            }
+            Err(err) => {
+                //{{{ trace
+                error!("Failed to connect to client with error: {}", err);
+                //}}}
+            }
+        };
     }
 }
