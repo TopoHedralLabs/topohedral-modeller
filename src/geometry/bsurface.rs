@@ -29,7 +29,7 @@ where
     cpoints_w: Vec<Vector<{ D + 1 }>>,
     r: usize,
     s: usize,
-    abox: Option<ABox>,
+    abox: Option<ABox<D>>,
 }
 //..................................................................................................
 
