@@ -1,11 +1,21 @@
-use std::rc::Rc;
+//! This module contains the definition of the B-spline curve class.
+//!
+//! B-spline curves are defined by a set of control points and a set of knots and weights.
+//! They are particularly useful for representing free-form curves.
+//--------------------------------------------------------------------------------------------------
 
-
+//{{{ crate imports 
 use crate::common::{Vec3, Vector};
 use crate::geometry::common::{homog, inv_homog, Curve};
 use crate::splines::{self as spl, knot_eq};
 use crate::utilities::{lower_bound, NDArrayWrapper};
 use crate::boxing::ABox;
+//}}}
+//{{{ std imports 
+//}}}
+//{{{ dep imports 
+//}}}
+//--------------------------------------------------------------------------------------------------
 
 pub const BCURVE_DER_MAX: usize = 5;
 
@@ -28,7 +38,7 @@ where
     knots: Vec<f64>,
     cpoints_w: Vec<Vector<{ D + 1 }>>,
     knot_multiplicites: Vec<(f64, usize)>,
-    pub abox: Option<ABox> ,
+    pub abox: Option<ABox<D>> ,
 }
 //..................................................................................................
 
@@ -128,8 +138,10 @@ where
     [(); D * BCURVE_DER_MAX]:,
     [(); D * 3]:,
 {
+    //{{{ type: Vector
     type Vector = Vector<D>;
-
+    //}}}
+    //{{{ fun: eval
     fn eval(
         &self,
         u: f64,
@@ -151,7 +163,8 @@ where
         point
     }
     //..............................................................................................
-
+    //}}}
+    //{{{ fun: eval_diff
     fn eval_diff(
         &self,
         u: f64,
@@ -172,7 +185,8 @@ where
         }
     }
     //..............................................................................................
-
+    //}}}
+    //{{{ fun: eval_diff_all 
     fn eval_diff_all(
         &self,
         u: f64,
@@ -233,7 +247,8 @@ where
         }
     }
     //..............................................................................................
-
+    //}}}
+    //{{{ eval_arclen
     fn eval_arclen(
         &self,
         u1: f64,
@@ -244,7 +259,8 @@ where
         out
     }
     //..............................................................................................
-
+    //}}}
+    //{{{ is_member
     fn is_member(
             &self,
             u: f64,
@@ -252,12 +268,14 @@ where
         spl::is_member(&self.knots, u)
     }
     //..............................................................................................
-
+    //}}}
+    //{{{ fun: dim
     fn dim(&self) -> usize {
         D
     }
     //..............................................................................................
-
+    //}}}
+    //{{{ fun: max_der
     fn max_der(&self, u: f64) -> usize {
         if self.is_rational() 
         {
@@ -268,6 +286,17 @@ where
             self.p
         }
     }
+    //}}}
+    //{{{ fun: min_value_scalar
+    fn min_value_scalar<F: Fn(f64) -> f64>(&self, f: F, param_range: Option<(f64, f64)>) -> (f64, f64) {
+        todo!()
+    }
+    //}}}
+    //{{{ fun: min_value_vector
+    fn min_value_vector<F: Fn(Self::Vector) -> f64>(&self, f: F, param_range: Option<(f64, f64)>) -> (f64, f64) {
+        todo!()
+    }
+    //}}}
 }
 //..................................................................................................
 
