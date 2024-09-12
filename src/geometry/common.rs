@@ -1,14 +1,24 @@
 //! Contains the common definitions used throughout the geometry module, these include traits, 
 //! constants and a handful of commmon functions
-// -------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------
 
+//{{{ crate imports 
 use crate::common::{Vector, VectorOps, ResConstants};
+//}}}
+//{{{ std imports 
+//}}}
+//{{{ dep imports 
+//}}}
+//--------------------------------------------------------------------------------------------------
 
+//{{{ trait: Curve
 /// This trait models the set of operations on a curve.
-///  
 pub trait Curve
 {
+    //{{{ type Vector: VectorOps;
     type Vector: VectorOps;
+    //}}}
+    //{{{ fun: eval
     /// Evaluates a curve at the parameter value $u$. Therefore it evaluates the parameterisation:
     /// $$
     /// \mathbf{C}(u): \mathbb{R} \rightarrow \mathbb{R}^{D}
@@ -21,8 +31,8 @@ pub trait Curve
         &self,
         u: f64,
     ) -> Self::Vector;
-    //..............................................................................................
-
+    //}}}
+    //{{{ fun: eval_diff
     /// Evalutes the $m$'th derivative of the curve:
     /// $$
     ///     \mathbf{C}^{(m)}(u) = \frac{d^{m}C(u)}{du^{m}}
@@ -37,8 +47,8 @@ pub trait Curve
         u: f64,
         m: usize,
     ) -> Self::Vector;
-    //..............................................................................................
-
+    //}}}
+    //{{{ fun: eval_diff_all
     /// Evalutes the $0$'th to the $m$'th derivative of the curve:
     /// $$
     ///     \left \\{ \mathbf{C}^{(0)}, ..., \mathbf{C}^{(m)}(u) \right \\}
@@ -54,8 +64,8 @@ pub trait Curve
         m: usize,
         ders: &mut [Self::Vector],
     );
-    //..............................................................................................
-
+    //}}}
+    //{{{ fun: eval_tangent
     /// Evalutes the tangent to the curve at the parameter value `u`.
     fn eval_tangent(
         &self,
@@ -72,8 +82,8 @@ pub trait Curve
         }
         tan
     }
-    //..............................................................................................
-
+    //}}}
+    //{{{ fun: eval_normal 
     /// Evaluates the normal to the curve at the parameter value `u`.
     fn eval_normal(
         &self,
@@ -120,8 +130,8 @@ pub trait Curve
             _=> panic!("dim mux be 2 or 3"),
         }
     }
-    //..............................................................................................
-
+    //}}}
+    //{{{ fun: eval_binormal
     /// Evaluates the binormal to the cure at the parameter value `u`.
     fn eval_binormal(
         &self,
@@ -147,8 +157,8 @@ pub trait Curve
             _ => {panic!("D must be 2 or 3")}   
         }
     }
-    //..............................................................................................
-
+    //}}}
+    //{{{ fun: eval_curvature
     /// Evaluates the curvature of the curve at the paramter value `u`    
     fn eval_curvature(
         &self,
@@ -170,8 +180,8 @@ pub trait Curve
         };
         kappa
     }
-    //..............................................................................................
-
+    //}}}
+    //{{{ fun: eval_torsion
     /// Evaluates the torsion of the curve at the parameter value `u`
     fn eval_torsion(
         &self,
@@ -195,33 +205,68 @@ pub trait Curve
         };
         tau
     }
-    //..............................................................................................
-
+    
+    //}}}
+    //{{{ fun: eval_arclen
     /// Evaluates the arc length of the curve at the parameter value `u`
     fn eval_arclen(
         &self,
         u1: f64,
         u2: f64,
     ) -> f64;
-    //..............................................................................................
-
+    //}}}
+    //{{{ fun: is_member
     /// Determines whether the given parameter value `u` is in the valid range of the curve.
     fn is_member(
         &self,
         u: f64,
     ) -> bool;
-    //..............................................................................................
-
+    //}}}
+    //{{{ fun: dim
     /// Returns the dimension of Euclidian space in which the curve is embedded.
     fn dim(&self) -> usize;
-    //..............................................................................................
-
+    //}}}
+    //{{{ fun: max_der
     /// Returns the maximum allowed order of derivative at the given parameter
     fn max_der(&self, u: f64) -> usize;
-    //..............................................................................................
+    //}}}
+    //{{{ fun: min_value_scalar
+    /// Finds the minimum value of a scalar function `f` over an optional parameter range.
+    ///
+    /// This function evaluates the scalar function `f` over an optional parameter range `param_range`
+    /// and returns the minimum value and the parameter value at which the minimum occurs.
+    ///
+    /// # Arguments
+    /// * `f` - A closure that takes a `f64` parameter and returns a `f64` value.
+    /// * `param_range` - An optional tuple `(f64, f64)` specifying the parameter range over which to
+    ///   evaluate the function `f`. If `None`, the function will be evaluated over the entire valid
+    ///   parameter range of the object.
+    ///
+    /// # Returns
+    /// A tuple `(f64, f64)` where the second element is the minimum value of `f` and the first element
+    /// is the parameter value at which the minimum occurs.
+    fn min_value_scalar<F: Fn(f64) -> f64>(&self, f: F, param_range: Option<(f64, f64)>) -> (f64, f64);
+    //}}}
+    //{{{ fun: min_value_vector
+    /// Finds the minimum value of a vector-valued function `f` over an optional parameter range.
+    ///
+    /// This function evaluates the vector-valued function `f` over an optional parameter range `param_range`
+    /// and returns the minimum value of the function.
+    ///
+    /// # Arguments
+    /// * `f` - A closure that takes a `Self::Vector` parameter and returns a `f64` value.
+    /// * `param_range` - An optional tuple `(f64, f64)` specifying the parameter range over which to
+    ///   evaluate the function `f`. If `None`, the function will be evaluated over the entire valid
+    ///   parameter range of the object.
+    ///
+    /// # Returns
+    /// A tuple `(f64, f64)` where the first value is the parameter value at which the mininum occurs 
+    /// and the second value is the minimum value of the function `f` over the specified parameter range.
+    fn min_value_vector<F: Fn(Self::Vector) -> f64>(&self, f: F, param_range: Option<(f64, f64)>) -> (f64, f64);
+    //}}}
 }
-//.................................................................................................. 
-
+//}}}
+//{{{ trait: Surface 
 /// This trait models the set of operations on a surface
 pub trait Surface
 {
@@ -238,7 +283,7 @@ pub trait Surface
         &self,
         u: f64,
         v: f64) -> Self::Vector;
-    //..............................................................................................
+    
 
     /// Evaluates the ``nu``'th partial derivative of the surface with respect to ``u`` and the
     /// ``nv``'th partial derivative with respect to ``v``.
@@ -250,7 +295,7 @@ pub trait Surface
         v: f64, 
         nu: usize,
     ) -> Self::Vector;
-    //..............................................................................................
+    
 
     /// Evaluates the ``nu``'th partial derivative of the surface with respect to ``u`` and the
     /// ``nv``'th partial derivative with respect to ``v``.
@@ -262,7 +307,7 @@ pub trait Surface
         v: f64, 
         nv: usize,
     ) -> Self::Vector;
-    //..............................................................................................
+    
 
     /// Computes all of the partial derivatives of the surface up to the specified orders.
     ///
@@ -281,7 +326,7 @@ pub trait Surface
         nv: usize,
         ders: &mut [Self::Vector],
     );
-    //..............................................................................................
+    
 
     fn eval_tangent(
         &self,
@@ -289,7 +334,7 @@ pub trait Surface
         v: f64,
         normalise: bool
     ) -> (Self::Vector, Self::Vector);
-    //..............................................................................................
+    
 
     fn eval_normal(
         &self,
@@ -297,56 +342,57 @@ pub trait Surface
         v: f64,
         normalise: bool,
     ) -> Self::Vector;
-    //..............................................................................................
+    
 
     fn eval_principle_curvatures(
         &self,
         u: f64,
         v: f64,
     ) -> (f64, f64);
-    //..............................................................................................
+    
 
     fn eval_gauss_curvature(
         &self,
         u: f64,
         v: f64,
     ) -> f64;
-    //..............................................................................................
+    
 
     fn eval_mean_curvature(
         &self,
         u: f64,
         v: f64,
     ) -> f64;
-    //..............................................................................................
+    
 
     /// Determines whether the given parameter value `u` is in the valid U-range of the surface.
     fn is_member_u(
         &self,
         u: f64,
     ) -> bool;
-    //..............................................................................................
+    
 
     /// Determines whether the given parameter value `u` is in the valid V-range of the surface.
     fn is_member_v(
         &self,
         v: f64,
     ) -> bool;
-    //..............................................................................................
+    
 
     /// Returns the dimension of Euclidian space in which the curve is embedded.
     fn dim(&self) -> usize;
-    //..............................................................................................
+    
 
     /// Returns the maximum allowed order of derivative at the given parameter
     fn max_der_u(&self, u: f64) -> usize;
-    //..............................................................................................
+    
 
     /// Returns the maximum allowed order of derivative at the given parameter
     fn max_der_v(&self, v: f64) -> usize;
-    //..............................................................................................
+    
 }
-
+//}}}
+//{{{ fun: inv_homog
 /// Performs the perspective map (inverse of homogeneuos map) from homogeneous coordinates to
 /// Euclidean coordinates.
 pub fn inv_homog<const N: usize>(point_w: &Vector<{ N + 1 }>) -> Vector<{ N }>
@@ -361,7 +407,8 @@ where
     }
     point
 }
-
+//}}}
+//{{{ fun: homog
 /// Performs the inverse perspective map (homogeneous map) from Euclidean coordinates to
 /// Homogeneious coordinates.
 pub fn homog<const N: usize>(
@@ -377,3 +424,13 @@ pub fn homog<const N: usize>(
     point_w[N] = weight;
     point_w
 }
+//}}}
+
+//-------------------------------------------------------------------------------------------------
+//{{{ mod: tests
+#[cfg(test)]
+mod tests
+{
+  
+}
+//}}}
