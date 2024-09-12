@@ -8,7 +8,7 @@ use crate::boxing::ABoxable;
 use crate::common::{Vec3, Vector};
 use crate::geometry::{Plane};
 use crate::utilities::normalize_min_max;
-use crate::viewer::common::{Vec3f32, Vecf64ToVecf32, Viewable3D, CurveColor, SurfaceColor};
+use crate::viewer::common::{tv,  Convert, Viewable, CurveColor, SurfaceColor};
 //}}}
 //{{{ std imports 
 use std::thread::panicking;
@@ -32,7 +32,7 @@ pub struct PlaneViewOptions {
     pub color: SurfaceColor,
 }
 
-impl Viewable3D for Plane
+impl Viewable for Plane
 {
     type Options = PlaneViewOptions;
 
@@ -60,7 +60,18 @@ impl Viewable3D for Plane
 
         match Client3D::new(port) {
             Ok(mut client) => {
-                client.add_plane(plane_disc);
+                match client.add_plane(plane_disc){
+                    Ok(plane_id) => {
+                        //{{{ trace
+                        info!("Plane added with id: {}", plane_id);
+                        //}}}
+                    }
+                    Err(e) => {
+                        //{{{ trace
+                        error!("Failed to add plane: {}", e);
+                        //}}}
+                    }
+                }
             }
             Err(e) => {
                 //{{{ trace
