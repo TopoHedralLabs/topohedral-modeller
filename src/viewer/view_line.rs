@@ -1,54 +1,100 @@
-use std::thread::panicking;
+//! Short Description of module
+//!
+//! Longer description of module
+//--------------------------------------------------------------------------------------------------
 
-use topohedral_viewer::{
-    d3::{CuboidDescriptor, LineDescriptor, Mesh, State, State3D, Vertex, VertexDescriptor},
-    Color, Colormap, ColormapError,
-};
-
+//{{{ crate imports 
 use crate::boxing::ABoxable;
 use crate::common::{Vec3, Vector};
 use crate::geometry::{Curve, Line, BCURVE_DER_MAX};
 use crate::utilities::normalize_min_max;
-use crate::viewer::common::{CurveColor, Vec3f32, Vecf64ToVecf32, Viewable3D};
+use crate::viewer::common::{CurveColor, Convert, Viewable};
+//}}}
+//{{{ std imports 
+//}}}
+//{{{ dep imports 
+use topohedral_viewer::{Color, d3::Client3D, d2::Client2D, d2, d3};
+use topohedral_tracing::*;
+//}}}
+//--------------------------------------------------------------------------------------------------
+
 
 /// Options to use when adding a mesh representing a line to the viewer
-pub struct LineViewOptions
+#[derive(Debug)]
+pub struct LineViewOptions<const D: usize>
 {
     /// First distance along the line to start the line segment, must be greater than `dist1`
     pub dist1: f64,
     /// Second distance along the line to start the line segment, must be less than `dist2`
     pub dist2: f64,
     /// Color in which to render the line
-    pub color: CurveColor,
+    pub color: CurveColor<D>,
 }
 
-impl<const D: usize> Viewable3D for Line<D>
+impl Viewable for Line<2>
 {
-    type Options = LineViewOptions;
+    type Options = LineViewOptions<2>;
     fn view(
         &mut self,
         port: usize,
-        options: &LineViewOptions,
+        options: &LineViewOptions<2>,
     )
     {
+        //{{{ trace
+        info!("Viewing line onn port {} with options {:?}", port, options);
+        //}}}
         let p1 = self.eval(options.dist1);
-        let p1_f32 = if D == 2
-        {
-            Vec3f32::new(p1[0] as f32, p1[1] as f32, 0.0)
-        }
-        else
-        {
-            Vec3f32::new(p1[0] as f32, p1[1] as f32, p1[2] as f32)
-        };
         let p2 = self.eval(options.dist2);
-        let p2_f32 = if D == 2
+        let line_color = match options.color
         {
-            Vec3f32::new(p2[0] as f32, p2[1] as f32, 0.0)
-        }
-        else
-        {
-            Vec3f32::new(p2[0] as f32, p2[1] as f32, p2[2] as f32)
+            CurveColor::Solid(color) => color,
+            _ => Color::default(),
         };
+
+        let line_disc = d2::LineDescriptor{
+            v1: p1.convert(),
+            v2: p2.convert(),
+            color: line_color,
+        };
+
+        match Client2D::new(port) {
+            Ok(mut client) => {
+                match client.add_line(line_disc) {
+                    Ok(plane_id) => {
+                        //{{{ trace
+                        info!("Plane added with id: {}", plane_id);
+                        //}}}
+                    }
+                    Err(e) => {
+                        //{{{ trace
+                        error!("Failed to add plane: {}", e);
+                        //}}}
+                    }
+                }
+            }
+            Err(e) => {
+                //{{{ trace
+                error!("Failed to connect to client: {}", e);
+                //}}}
+            }
+        }
+    }
+}
+
+impl Viewable for Line<3>
+{
+    type Options = LineViewOptions<3>;
+    fn view(
+        &mut self,
+        port: usize,
+        options: &LineViewOptions<3>,
+    )
+    {
+        //{{{ trace
+        info!("Viewing line onn port {} with options {:?}", port, options);
+        //}}}
+        let p1 = self.eval(options.dist1);
+        let p2 = self.eval(options.dist2);
 
         let line_color = match options.color
         {
@@ -56,10 +102,32 @@ impl<const D: usize> Viewable3D for Line<D>
             _ => Color::default(),
         };
 
-        // state.add_line(&LineDescriptor {
-        //     p1: p1_f32,
-        //     p2: p2_f32,
-        //     color: line_color,
-        // });
+        let line_disc = d3::LineDescriptor {
+            v1: p1.convert(), 
+            v2: p2.convert(), 
+            color: line_color
+        };
+
+        match Client3D::new(port) {
+            Ok(mut client) => {
+                match client.add_line(line_disc){
+                    Ok(plane_id) => {
+                        //{{{ trace
+                        info!("Plane added with id: {}", plane_id);
+                        //}}}
+                    }
+                    Err(e) => {
+                        //{{{ trace
+                        error!("Failed to add plane: {}", e);
+                        //}}}
+                    }
+                }
+            }
+            Err(e) => {
+                //{{{ trace
+                error!("Failed to connect to client: {}", e);
+                //}}}
+            }
+        }
     }
 }
