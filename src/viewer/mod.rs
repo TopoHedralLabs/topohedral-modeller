@@ -4,8 +4,7 @@ pub use topohedral_viewer::{Color, d2, d3};
 //..................................................................................................
 // core 
 mod common;
-pub use crate::viewer::common::Viewable3D;
-pub use common::{CurveColor, CurveViewMethod, SurfaceColor};
+pub use common::{Viewable, CurveColor, CurveViewMethod, SurfaceColor, tv};
 //..................................................................................................
 // misc
 mod view_box;
