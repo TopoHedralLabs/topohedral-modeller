@@ -2,7 +2,7 @@ use crate::{common::{
     vec_colinear, vec_orthogonal, vec_unitary, Descriptor, DescriptorError, ResConstants, Vec3,
 }, utilities};
 
-use super::{common::Surface, Curve};
+use crate::geometry::{common::Surface, Curve};
 
 pub struct PlaneDescriptor
 {

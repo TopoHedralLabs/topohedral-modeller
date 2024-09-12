@@ -3,7 +3,7 @@ use crate::common::Vector;
 use crate::geometry::common::{homog, inv_homog};
 use crate::splines as spl;
 
-use super::common::Surface;
+use crate::geometry::common::Surface;
 
 pub const BSURFACE_DER_MAX: usize = spl::PMAX + 1;
 

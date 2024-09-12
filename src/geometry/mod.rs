@@ -8,18 +8,16 @@
 mod common;
 // .................................................................................................
 // Curves
-mod line;
-mod bcurve;
+mod curve;
 
 pub use common::Curve;
-pub use line::{Line, LineDescriptor};
-pub use bcurve::{Bcurve, BcurveDescriptor, BCURVE_DER_MAX};
+pub use curve::line::{Line, LineDescriptor};
+pub use curve::bcurve::{Bcurve, BcurveDescriptor, BCURVE_DER_MAX};
 // .................................................................................................
 // Surfaces
-mod plane;
-mod bsurface;
+mod surface;
 
 pub use common::Surface;
-pub use plane::{Plane, PlaneDescriptor};
-pub use bsurface::{Bsurface, BsurfaceDescriptor, BSURFACE_DER_MAX};
+pub use surface::plane::{Plane, PlaneDescriptor};
+pub use surface::bsurface::{Bsurface, BsurfaceDescriptor, BSURFACE_DER_MAX};
 // .................................................................................................

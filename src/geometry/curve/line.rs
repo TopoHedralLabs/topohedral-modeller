@@ -4,7 +4,7 @@
 
 //{{{ crate imports 
 use crate::common::{vec_unitary, Descriptor, Vector};
-use super::{common::Surface, Curve};
+use crate::geometry::common::{Surface, Curve};
 //}}}
 //{{{ std imports 
 //}}}
