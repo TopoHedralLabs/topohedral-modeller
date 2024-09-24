@@ -131,6 +131,16 @@ impl<const D: usize> Curve for Line<D>
         todo!()
     }
     //}}}
+    //{{{ fun: integrate_scalar
+    fn integrate_scalar<F: Fn(f64) -> f64>(&self, f: F, param_range: Option<(f64, f64)>) -> f64 {
+        todo!()
+    }
+    //}}}
+    //{{{ fun: integrate_vector
+    fn integrate_vector<F: Fn(Self::Vector) -> f64>(&self, f: F, param_range: Option<(f64, f64)>) -> f64 {
+        todo!()
+    }
+    //}}}
 }
 //}}}
 

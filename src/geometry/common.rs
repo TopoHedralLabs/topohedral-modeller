@@ -264,6 +264,38 @@ pub trait Curve
     /// and the second value is the minimum value of the function `f` over the specified parameter range.
     fn min_value_vector<F: Fn(Self::Vector) -> f64>(&self, f: F, param_range: Option<(f64, f64)>) -> (f64, f64);
     //}}}
+    //{{{ fun: integrate_scalar
+    /// Integrates a scalar function `f` over an optional parameter range.
+    ///
+    /// This function evaluates the scalar function `f` over an optional parameter range `param_range`
+    /// and returns the integral of the function over the specified range.
+    ///
+    /// # Arguments
+    /// * `f` - A closure that takes a `f64` parameter and returns a `f64` value.
+    /// * `param_range` - An optional tuple `(f64, f64)` specifying the parameter range over which to
+    ///   evaluate the function `f`. If `None`, the function will be integrated over the entire valid
+    ///   parameter range of the object.
+    ///
+    /// # Returns
+    /// The integral of the function `f` over the specified parameter range.
+    fn integrate_scalar<F: Fn(f64) -> f64>(&self, f: F, param_range: Option<(f64, f64)>) -> f64;
+    //}}}
+    //{{{ fun: integrate_vector
+    /// Integrates a vector-valued function `f` over an optional parameter range.
+    ///
+    /// This function evaluates the vector-valued function `f` over an optional parameter range `param_range`
+    /// and returns the integral of the function over the specified range.
+    ///
+    /// # Arguments
+    /// * `f` - A closure that takes a `Self::Vector` parameter and returns a `f64` value.
+    /// * `param_range` - An optional tuple `(f64, f64)` specifying the parameter range over which to
+    ///   evaluate the function `f`. If `None`, the function will be integrated over the entire valid
+    ///   parameter range of the object.
+    ///
+    /// # Returns
+    /// The integral of the function `f` over the specified parameter range.
+    fn integrate_vector<F: Fn(Self::Vector) -> f64>(&self, f: F, param_range: Option<(f64, f64)>) -> f64;
+    //}}}
 }
 //}}}
 //{{{ trait: Surface 
@@ -271,8 +303,10 @@ pub trait Curve
 pub trait Surface
 {
 
+    //{{{ type: Vector
     type Vector: VectorOps;
-
+    //}}}
+    //{{{ fun: eval
     /// Evaluates a point on the surface.
     ///
     /// Therefore it evaluates the parameterisation:
@@ -283,8 +317,8 @@ pub trait Surface
         &self,
         u: f64,
         v: f64) -> Self::Vector;
-    
-
+    //}}}
+    //{{{ fun: eval_diff_u
     /// Evaluates the ``nu``'th partial derivative of the surface with respect to ``u`` and the
     /// ``nv``'th partial derivative with respect to ``v``.
     ///
@@ -295,8 +329,8 @@ pub trait Surface
         v: f64, 
         nu: usize,
     ) -> Self::Vector;
-    
-
+    //}}}
+    //{{{ fun: eval_diff_v
     /// Evaluates the ``nu``'th partial derivative of the surface with respect to ``u`` and the
     /// ``nv``'th partial derivative with respect to ``v``.
     ///
@@ -307,8 +341,8 @@ pub trait Surface
         v: f64, 
         nv: usize,
     ) -> Self::Vector;
-    
-
+    //}}}
+    //{{{ fun: eval_diff_all
     /// Computes all of the partial derivatives of the surface up to the specified orders.
     ///
     /// Given a surface $\mathbf{s}(u, v)$, the derivative $\mathbf{s}^{(m, l)}(u,v) will be 
@@ -326,8 +360,7 @@ pub trait Surface
         nv: usize,
         ders: &mut [Self::Vector],
     );
-    
-
+    //}}}
     fn eval_tangent(
         &self,
         u: f64,
