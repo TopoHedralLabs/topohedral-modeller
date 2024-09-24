@@ -120,7 +120,7 @@ impl Viewable for Bcurve<2>
 //{{{ impl: Bcurve<3>
 impl Bcurve<3>
 {
-
+    //{{{ fun: view_curvature
     /// This method renders the B-curve with greater sampling density on areas of high curvature.
     fn view_curvature(
         &mut self,
@@ -130,9 +130,21 @@ impl Bcurve<3>
     {
         todo!()
     }
-
-    /// This method renders the B-curve with an even distribution of sample points in parameter 
-    /// space
+    //}}}
+    //{{{ fun: view_uniform
+    /// This method renders the B-curve using a uniform sampling density along the curve.
+    /// 
+    /// The method takes the following parameters:
+    /// - `port`: The port number to connect to the 3D viewer client.
+    /// - `opts`: The options for rendering the B-curve, including the number of divisions and the 
+    ///           color.
+    ///
+    /// The method first calculates the number of points to sample along the curve, the parameter 
+    /// range, and the step size. It then creates a 3D mesh and adds vertices for each sampled 
+    /// point, using the curve's `eval` method to compute the point positions. The method also 
+    /// adds line indices to connect the vertices into a polyline representation of the curve.
+    /// 
+    /// Finally, the method connects to the 3D viewer client and adds the mesh to the viewer.
     fn view_uniform(
         &mut self,
         port: usize,
@@ -189,6 +201,7 @@ impl Bcurve<3>
 
 
     }
+    //}}}
 }
 //}}}
 //{{{ impl: Viewable for Bcurve<2>
