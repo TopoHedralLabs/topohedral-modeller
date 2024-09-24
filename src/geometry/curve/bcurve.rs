@@ -390,7 +390,6 @@ mod tests
                 for (idx, u) in test_data.u.values.iter().enumerate()
                 {
                     let point1 = points[idx].clone();
-                    let mut point2 = Vector::<$dim>::zeros();
                     let point2 = bcurve.eval(*u);   
                     for i in 0..d
                     {
@@ -592,7 +591,6 @@ mod tests
                 {
                     let mut tangent1 = tangents[idx].clone();
                     de_noise(tangent1.as_mut_slice());
-                    let mut tangent2 = Vector::<$dim>::zeros();
                     let mut tangent2 = bcurve.eval_tangent(*u, false);
                     de_noise(tangent2.as_mut_slice());
                     for i in 0..d
@@ -682,7 +680,6 @@ mod tests
             #[test]
             fn $test_name()
             {
-                let d = $dim;
                 let p = $order;
                 let test_data = TestData::new();
                 let bcurve = load_bcurve::<$dim>(p, &test_data);
