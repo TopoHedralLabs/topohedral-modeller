@@ -1,20 +1,27 @@
 //! This module contains common types, traits and utility functions used throughout the crate.
 //!
-//!
 //--------------------------------------------------------------------------------------------------
 
+//{{{ crate imports 
+//}}}
+//{{{ std imports 
+use std::ops::{Add, Index, IndexMut, Mul, Sub};
+//}}}
+//{{{ dep imports 
 use nalgebra as na;
 use thiserror::Error;
+//}}}
+//--------------------------------------------------------------------------------------------------
 
-use std::ops::{Add, Index, IndexMut, Mul, Sub};
-//..................................................................................................
 
+//{{{ collection: Vector types
 pub type Vector<const N: usize> = na::SVector<f64, N>;
 pub type Vec2 = Vector<2>;
 pub type Vec3 = Vector<3>;
 pub type Vec4 = Vector<4>;
-//..................................................................................................
-
+//}}}
+//{{{ collection: VectorOps
+//{{{ trait: VectorOps
 /// This trait provides a set of operations defined for nalgebra vecotrs vectors. This is purely
 /// to overcome the limitations of Rusts rules on trait implementations.
 pub trait VectorOps:
@@ -33,7 +40,8 @@ pub trait VectorOps:
     fn norm(&self) -> f64;
     fn normalize(&self) -> Self;
 }
-
+//}}}
+//{{{ impl: VectorOps for Vector<D>
 impl<const D: usize> VectorOps for Vector<D>
 {
     fn zeros() -> Self
@@ -67,42 +75,47 @@ impl<const D: usize> VectorOps for Vector<D>
         self.normalize()
     }
 }
-//..................................................................................................
-
+//}}}
+//}}}
+//{{{ collection: ResConstants 
+//{{{ trait: ResConstants
 /// Defines set of constants used throughout crate for tolerant floating point comparisons.
 pub trait ResConstants
 {
     const RES_LINEAR: Self;
     const RES_ANGULAR: Self;
 }
-
+//}}}
+//{{{ impl: ResConstants for f32
 impl ResConstants for f32
 {
     const RES_LINEAR: f32 = 1.0e-10;
     const RES_ANGULAR: f32 = 1.0e-8;
 }
-
+//}}}
+//{{{ impl: ResConstants for f64
 impl ResConstants for f64
 {
     const RES_LINEAR: f64 = 1.0e-10;
     const RES_ANGULAR: f64 = 1.0e-8;
 }
-//..................................................................................................
-
+//}}}
+//}}}
+//{{{ enum: DescriptorError
 #[derive(Error, Debug)]
 pub enum DescriptorError
 {
     #[error("Invalid input: {0}")]
     InvalidInput(String),
 }
-//..................................................................................................
-
+//}}}
+//{{{ trait: Descriptor
 pub trait Descriptor 
 {
     fn is_valid(&self) -> Result<(), DescriptorError>;
 }
-//..................................................................................................
-
+//}}}
+//{{{ fun: vec_equal
 /// Determines whether two vectors are equal within a given tolerance.
 ///
 /// # Arguments
@@ -118,8 +131,8 @@ fn vec_equal<const D: usize>(
 {
     (a - b).norm() <= tol
 }
-//..................................................................................................
-
+//}}}
+//{{{ fun: vec_unitary
 /// Determines whether a vector is unitary (i.e. has a norm of 1) within a given tolerance.
 ///
 /// # Arguments
@@ -138,8 +151,8 @@ pub fn vec_unitary<const D: usize>(
     let norm = a.norm();
     (norm - 1.0).abs() <= tol
 }
-//..................................................................................................
-
+//}}}
+//{{{ fun: vec_colinear
 ///  Determines whether two vectors are colinear
 ///
 /// # Arguments
@@ -157,13 +170,17 @@ pub fn vec_colinear<const D: usize> (a: &Vector<D>, b: &Vector<D>, mut tol: f64)
     let cos_angle = a.dot(b).abs() / (a_norm * b_norm);
     (cos_angle - 1.0).abs() <= tol
 }
-//..................................................................................................
-
-/// Short Description
+//}}}
+//{{{ fun: vec_orthogonal
+/// Determines whether two vectors are orthogonal within a given tolerance.
 ///
 /// # Arguments
+/// * `a` - First vector to compare
+/// * `b` - Second vector to compare
+/// * `tol` - Tolerance value for determining orthogonality
 ///
 /// # Returns
+/// True if vectors are orthogonal within tolerance, false otherwise
 pub fn vec_orthogonal<const D: usize>(a: &Vector<D>, b: &Vector<D>, mut tol: f64) -> bool 
 {
     if tol < 0.0 {
@@ -174,4 +191,13 @@ pub fn vec_orthogonal<const D: usize>(a: &Vector<D>, b: &Vector<D>, mut tol: f64
     let cos_angle = a.dot(b).abs() / (a_norm * b_norm);
     cos_angle <= tol
 }
-//..................................................................................................
+//}}}
+
+//-------------------------------------------------------------------------------------------------
+//{{{ mod: tests
+#[cfg(test)]
+mod tests
+{
+  
+}
+//}}}
