@@ -17,8 +17,10 @@ use crate::boxing::ABox;
 //}}}
 //--------------------------------------------------------------------------------------------------
 
+//{{{ constants
 pub const BCURVE_DER_MAX: usize = 5;
-
+//}}}
+//{{{ struct: BcurveDescriptor
 pub struct BcurveDescriptor<const D: usize>
 {
     pub p: usize,
@@ -26,10 +28,20 @@ pub struct BcurveDescriptor<const D: usize>
     pub cpoints: Vec<Vector<D>>,
     pub cweights: Vec<f64>,
 }
-
-/// This struct encapsulates the data for a B-curve
-///
+//}}}
+//{{{ collection: Bcurve 
+//{{{ struct: Bcurve
 #[derive(Clone)]
+/// A B-spline curve of dimension `D`.
+///
+/// B-spline curves are defined by a set of control points, knots, and weights. They are useful for representing free-form curves.
+///
+/// The `Bcurve` struct contains the following fields:
+/// - `p`: The order of the B-spline curve.
+/// - `knots`: The knot vector of the B-spline curve.
+/// - `cpoints_w`: The control points of the B-spline curve in homogeneous coordinates.
+/// - `knot_multiplicites`: The multiplicities of the knots.
+/// - `abox`: An optional axis-aligned bounding box for the B-spline curve.
 pub struct Bcurve<const D: usize>
 where
     [(); D + 1]:,
@@ -40,8 +52,8 @@ where
     knot_multiplicites: Vec<(f64, usize)>,
     pub abox: Option<ABox<D>> ,
 }
-//..................................................................................................
-
+//}}}
+//{{{ impl: Bcurve
 impl<const D: usize> Bcurve<D>
 where
     [(); D + 1]:,
@@ -130,8 +142,8 @@ where
         move |u| self_clone.eval_curvature(u)
     }
 }
-//..................................................................................................
-
+//}}}
+//{{{ impl: Curve for  Bcurve
 impl<const D: usize> Curve for Bcurve<D>
 where
     [(); D + 1]:,
@@ -287,30 +299,15 @@ where
         }
     }
     //}}}
-    //{{{ fun: min_value_scalar
-    fn min_value_scalar<F: Fn(f64) -> f64>(&self, f: F, param_range: Option<(f64, f64)>) -> (f64, f64) {
-        todo!()
-    }
-    //}}}
-    //{{{ fun: min_value_vector
-    fn min_value_vector<F: Fn(Self::Vector) -> f64>(&self, f: F, param_range: Option<(f64, f64)>) -> (f64, f64) {
-        todo!()
-    }
-    //}}}
-    //{{{ fun: integrate_scalar
-    fn integrate_scalar<F: Fn(f64) -> f64>(&self, f: F, param_range: Option<(f64, f64)>) -> f64 {
-        todo!()
-    }
-    //}}}
-    //{{{ fun: integrate_vector
-    fn integrate_vector<F: Fn(Self::Vector) -> f64>(&self, f: F, param_range: Option<(f64, f64)>) -> f64 {
-        todo!()
+    //{{{ fun: param_range
+    fn param_range(&self) -> (f64, f64) {
+        (self.knots[0], self.knots[self.knots.len() - 1])
     }
     //}}}
 }
-//..................................................................................................
-
-
+//}}}
+//}}}
+//{{{ fun: binom_coeff 
 fn binom_coeff(
     n: usize,
     binom: &mut [f64],
@@ -335,13 +332,14 @@ fn binom_coeff(
         }
     }
 }
-//..................................................................................................
+//}}}
 
-// ------------------------------------------- Tests -------------------------------------------- //
+//-------------------------------------------------------------------------------------------------
+//{{{ mod: tests
 #[cfg(test)]
 mod tests
 {
-
+  
     use approx::{assert_abs_diff_eq, assert_relative_eq, ulps_eq, AbsDiff};
     use serde::Deserialize;
     use std::fs;
@@ -771,3 +769,4 @@ mod tests
     //..............................................................................................
 
 }
+//}}}
