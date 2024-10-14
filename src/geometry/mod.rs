@@ -10,7 +10,7 @@ mod common;
 // Curves
 mod curve;
 
-pub use common::Curve;
+pub use common::{Curve, CurveMinValOpts};
 pub use curve::line::{Line, LineDescriptor};
 pub use curve::bcurve::{Bcurve, BcurveDescriptor, BCURVE_DER_MAX};
 // .................................................................................................

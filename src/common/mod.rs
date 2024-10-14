@@ -194,24 +194,6 @@ pub fn vec_orthogonal<const D: usize>(a: &Vector<D>, b: &Vector<D>, mut tol: f64
     cos_angle <= tol
 }
 //}}}
-//{{{ collection: quadrature
-//{{{ static: LEGENDRE_POINTS
-static LEGENDRE_POINTS: OnceLock<gauss::GuassQuadSet> = OnceLock::new();
-//}}}
-//{{{ static: LOBATTO_POINTS
-static LOBATTO_POINTS: OnceLock<gauss::GuassQuadSet> = OnceLock::new();
-//}}}
-//{{{ fun: get_legendre_points
-pub fn get_legendre_points() -> &'static gauss::GuassQuadSet {
-    LEGENDRE_POINTS.get_or_init(|| gauss::GuassQuadSet::new(gauss::GaussQuadType::Legendre, 20))
-}
-//}}}
-//{{{ fun: get_lobatto_points
-pub fn get_lobatto_points() -> &'static gauss::GuassQuadSet {
-    LOBATTO_POINTS.get_or_init(|| gauss::GuassQuadSet::new(gauss::GaussQuadType::Lobatto, 20))
-}
-//}}}
-//}}}
 
 //-------------------------------------------------------------------------------------------------
 //{{{ mod: tests
@@ -221,7 +203,6 @@ mod tests
     
     use std::vec;
     use super::*;
-    use approx::ulps_eq;
 
     #[test]
     fn test_vec_equal() {
@@ -258,30 +239,5 @@ mod tests
         assert!(!vec_orthogonal(&a, &c, 1.0e-10));
     }
 
-    #[test] 
-    fn test_get_legendre_points() {
-        let points = get_legendre_points();
-        let points_5 = points.gauss_quad_from_nqp(5);
-        let points_ok = vec![-0.9061798459386642, -0.5384693101056831, 2.1044260617163113e-16, 0.5384693101056824, 0.9061798459386633];
-        let weights_k = vec![0.23692688505618958, 0.4786286704993664, 0.5688888888888887, 0.47862867049936586, 0.2369268850561888];
-
-        for i in 0..5 {
-            assert!(ulps_eq!(points_ok[i], points_5.points[i], max_ulps = 4));
-            assert!(ulps_eq!(weights_k[i], points_5.weights[i], max_ulps = 4));
-        }
-    }
-
-    #[test]
-    fn test_get_lobatto_points() {
-        let points = get_lobatto_points();
-        let points_5 = points.gauss_quad_from_nqp(5);
-        let points_ok = vec![-1.0, -0.6546536707079771, 5.307881287095001e-17, 0.6546536707079771, 1.0];
-        let weights_ok = vec![0.1, 0.5444444444444444, 0.7111111111111111, 0.5444444444444444, 0.1];
-
-        for i in 0..5 {
-            assert!(ulps_eq!(points_ok[i], points_5.points[i], max_ulps = 4));
-            assert!(ulps_eq!(weights_ok[i], points_5.weights[i], max_ulps = 4));
-        }
-    }
 }
 //}}}

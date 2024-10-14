@@ -121,26 +121,6 @@ impl<const D: usize> Curve for Line<D>
         1
     }
     //}}}
-    //{{{ fun: min_value_scalar
-    fn min_value_scalar<F: Fn(f64) -> f64>(&self, f: F, param_range: Option<(f64, f64)>) -> (f64, f64) {
-        todo!()
-    }
-    //}}}
-    //{{{ fun: min_value_vector
-    fn min_value_vector<F: Fn(Self::Vector) -> f64>(&self, f: F, param_range: Option<(f64, f64)>) -> (f64, f64) {
-        todo!()
-    }
-    //}}}
-    //{{{ fun: integrate_scalar
-    fn integrate_scalar<F: Fn(f64) -> f64>(&self, f: F, param_range: Option<(f64, f64)>) -> f64 {
-        todo!()
-    }
-    //}}}
-    //{{{ fun: integrate_vector
-    fn integrate_vector<F: Fn(Self::Vector) -> f64>(&self, f: F, param_range: Option<(f64, f64)>) -> f64 {
-        todo!()
-    }
-    //}}}
 }
 //}}}
 

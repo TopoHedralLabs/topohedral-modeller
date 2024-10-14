@@ -8,9 +8,34 @@ use crate::common::{Vector, VectorOps, ResConstants};
 //{{{ std imports 
 //}}}
 //{{{ dep imports 
+use topohedral_optimisation::scalar;
+use topohedral_integrate::gauss;
 //}}}
 //--------------------------------------------------------------------------------------------------
 
+//{{{ constants
+const MIN_PARAM: f64 = f64::MIN;
+const MAX_PARAM: f64 = f64::MAX;
+//}}}
+//{{{ struct: CurveMinValOpts
+pub struct CurveMinValOpts
+{
+    pub bounds: Option<(f64, f64)>, 
+    pub tol: f64, 
+    pub max_iter: usize,
+}
+//}}}
+//{{{ impl Default for CurveMinValOpts
+impl Default for CurveMinValOpts {
+    fn default() -> Self {
+        CurveMinValOpts {
+            bounds: None,
+            tol: 1e-8,
+            max_iter: 1000,
+        }
+    }
+}
+//}}}
 //{{{ trait: Curve
 /// This trait models the set of operations on a curve.
 pub trait Curve
@@ -230,6 +255,16 @@ pub trait Curve
     /// Returns the maximum allowed order of derivative at the given parameter
     fn max_der(&self, u: f64) -> usize;
     //}}}
+    //{{{ fun: param_range
+    /// Returns the valid range of the parameter space for the curve. 
+    /// 
+    /// This defaults to ``(MIN_PARAM, MAX_PARAM)``, where ``MIN_PARAM`` and ``MAX_PARAM`` are
+    /// value
+    fn param_range(&self) -> (f64, f64)
+    {
+        (MIN_PARAM, MAX_PARAM)
+    }
+    //}}}
     //{{{ fun: min_value_scalar
     /// Finds the minimum value of a scalar function `f` over an optional parameter range.
     ///
@@ -245,7 +280,23 @@ pub trait Curve
     /// # Returns
     /// A tuple `(f64, f64)` where the second element is the minimum value of `f` and the first element
     /// is the parameter value at which the minimum occurs.
-    fn min_value_scalar<F: Fn(f64) -> f64>(&self, f: F, param_range: Option<(f64, f64)>) -> (f64, f64);
+    fn min_value_scalar<F: Fn(f64) -> f64>(&self, f: F, opts: &CurveMinValOpts) -> (f64, f64)
+    {
+        let bounds = match opts.bounds{
+            Some(range) => range,
+            None => self.param_range()
+        };
+
+        let opts2 = scalar::MinimizeScalarOptions{
+            method: scalar::Method::Bounded, 
+            bounds: scalar::Bounds::Pair(bounds), 
+            tol: opts.tol,
+            max_iter: opts.max_iter,
+        };
+
+        let min_res = scalar::minimize_scalar(f, &opts2).unwrap();
+        (min_res.xmin, min_res.fmin)
+    }
     //}}}
     //{{{ fun: min_value_vector
     /// Finds the minimum value of a vector-valued function `f` over an optional parameter range.
@@ -262,23 +313,38 @@ pub trait Curve
     /// # Returns
     /// A tuple `(f64, f64)` where the first value is the parameter value at which the mininum occurs 
     /// and the second value is the minimum value of the function `f` over the specified parameter range.
-    fn min_value_vector<F: Fn(Self::Vector) -> f64>(&self, f: F, param_range: Option<(f64, f64)>) -> (f64, f64);
+    fn min_value_vector<F: Fn(Self::Vector) -> f64>(&self, f: F, opts: &CurveMinValOpts) -> (f64, f64)
+    {
+        let bounds = match opts.bounds{
+            Some(range) => range,
+            None => self.param_range()
+        };
+
+        let opts = scalar::MinimizeScalarOptions{
+            method: scalar::Method::Bounded, 
+            bounds: scalar::Bounds::Pair(bounds), 
+            tol:  1e-6,
+            max_iter: 1000,
+        };
+
+        let fcn = |t: f64| {
+            let x = self.eval(t);
+            let fval = f(x);
+            fval
+        };
+
+        let min_res = scalar::minimize_scalar(fcn, &opts).unwrap();
+        (min_res.xmin, min_res.fmin)
+    }
     //}}}
     //{{{ fun: integrate_scalar
-    /// Integrates a scalar function `f` over an optional parameter range.
-    ///
-    /// This function evaluates the scalar function `f` over an optional parameter range `param_range`
-    /// and returns the integral of the function over the specified range.
-    ///
-    /// # Arguments
-    /// * `f` - A closure that takes a `f64` parameter and returns a `f64` value.
-    /// * `param_range` - An optional tuple `(f64, f64)` specifying the parameter range over which to
-    ///   evaluate the function `f`. If `None`, the function will be integrated over the entire valid
-    ///   parameter range of the object.
-    ///
-    /// # Returns
-    /// The integral of the function `f` over the specified parameter range.
-    fn integrate_scalar<F: Fn(f64) -> f64>(&self, f: F, param_range: Option<(f64, f64)>) -> f64;
+    fn integrate_scalar<F: Fn(f64) -> f64>(&self, f: F, param_range: Option<(f64, f64)>) -> f64
+    {
+        // let leg = get_legendre_points();
+        // let leg5 = leg.gauss_quad_from_nqp(5);
+        // let 
+        todo!()
+    }
     //}}}
     //{{{ fun: integrate_vector
     /// Integrates a vector-valued function `f` over an optional parameter range.
@@ -294,7 +360,10 @@ pub trait Curve
     ///
     /// # Returns
     /// The integral of the function `f` over the specified parameter range.
-    fn integrate_vector<F: Fn(Self::Vector) -> f64>(&self, f: F, param_range: Option<(f64, f64)>) -> f64;
+    fn integrate_vector<F: Fn(Self::Vector) -> f64>(&self, f: F, param_range: Option<(f64, f64)>) -> f64
+    {
+        todo!();
+    }
     //}}}
 }
 //}}}

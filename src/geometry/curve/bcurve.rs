@@ -29,7 +29,7 @@ pub struct BcurveDescriptor<const D: usize>
     pub cweights: Vec<f64>,
 }
 //}}}
-//{{{ collection: Bcurve 
+//{{{ collection: Bcurve
 //{{{ struct: Bcurve
 #[derive(Clone)]
 /// A B-spline curve of dimension `D`.

@@ -1,6 +1,6 @@
 use crate::common::Vector;
 use crate::boxing::common::{ABox, ABoxable};
-use crate::geometry::Curve;
+use crate::geometry::{Curve, CurveMinValOpts};
 use crate::geometry::{Bcurve, BCURVE_DER_MAX};
 
 use topohedral_integrate::gauss;
@@ -53,11 +53,10 @@ where
         }
         //}}}
         //{{{ com: create minimisation options struct, initialise it to use the bounded 1D method
-        let mut min_scal_opts = MinimizeScalarOptions {
-            method:  Method::Bounded, 
-            bounds: Bounds::Pair((0.0, 0.0)),
-            tol: 1e-8, 
+        let mut min_scal_opts = CurveMinValOpts{
+            tol: 1e-8,
             max_iter: 100,
+            bounds: None,
         };
         //}}}
         //{{{ com: For each dimension, bracket the min/max and then perform the minimisation. 
@@ -78,15 +77,15 @@ where
                     (knots[start + min_idx - 1], knots[start + min_idx + 1])
                 }
             };
-            min_scal_opts.bounds = Bounds::Pair(min_interval);
 
             let fmin = |u| {
                 let xi = self.eval(u);
                 xi[j]
             };
 
-            let min_res = minimize_scalar(fmin, &min_scal_opts).unwrap();
-            min_vals[j] = min_res.fmin;
+            min_scal_opts.bounds = Some(min_interval);
+            let min_res = self.min_value_scalar(fmin, &min_scal_opts);
+            min_vals[j] = min_res.1;
             //}}}
             //{{{ com: max for dimension j
             let max_idx = max_idx[j];
@@ -103,16 +102,15 @@ where
                     (knots[start + max_idx - 1], knots[start + max_idx + 1])
                 }
             };
-            min_scal_opts.bounds = Bounds::Pair(max_interval);
+            min_scal_opts.bounds = Some(max_interval);
 
             let fmax = |u| {
                 let xi = self.eval(u);
                 -xi[j]
             };
 
-            let max_res = minimize_scalar(fmax, &min_scal_opts).unwrap();
-
-            max_vals[j] = -max_res.fmin;
+            let max_res = self.min_value_scalar(fmax, &min_scal_opts);
+            max_vals[j] = -max_res.1;
             //}}}
         }
         //}}}
