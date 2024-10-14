@@ -4,7 +4,7 @@ use crate::geometry::{Curve, CurveMinValOpts};
 use crate::geometry::{Bcurve, BCURVE_DER_MAX};
 
 use topohedral_integrate::gauss;
-use topohedral_optimisation::scalar::{minimize_scalar, 
+use topohedral_optimisation::d1::{minimize_scalar, 
     MinimizeScalarOptions, MinimizeScalarReturns, Method, Bounds};
 
 

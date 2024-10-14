@@ -8,7 +8,7 @@ use crate::common::{Vector, VectorOps, ResConstants};
 //{{{ std imports 
 //}}}
 //{{{ dep imports 
-use topohedral_optimisation::scalar;
+use topohedral_optimisation::d1;
 use topohedral_integrate::gauss;
 //}}}
 //--------------------------------------------------------------------------------------------------
@@ -287,14 +287,14 @@ pub trait Curve
             None => self.param_range()
         };
 
-        let opts2 = scalar::MinimizeScalarOptions{
-            method: scalar::Method::Bounded, 
-            bounds: scalar::Bounds::Pair(bounds), 
+        let opts2 = d1::MinimizeScalarOptions{
+            method: d1::Method::Bounded, 
+            bounds: d1::Bounds::Pair(bounds), 
             tol: opts.tol,
             max_iter: opts.max_iter,
         };
 
-        let min_res = scalar::minimize_scalar(f, &opts2).unwrap();
+        let min_res = d1::minimize_scalar(f, &opts2).unwrap();
         (min_res.xmin, min_res.fmin)
     }
     //}}}
@@ -320,9 +320,9 @@ pub trait Curve
             None => self.param_range()
         };
 
-        let opts = scalar::MinimizeScalarOptions{
-            method: scalar::Method::Bounded, 
-            bounds: scalar::Bounds::Pair(bounds), 
+        let opts = d1::MinimizeScalarOptions{
+            method: d1::Method::Bounded, 
+            bounds: d1::Bounds::Pair(bounds), 
             tol:  1e-6,
             max_iter: 1000,
         };
@@ -333,7 +333,7 @@ pub trait Curve
             fval
         };
 
-        let min_res = scalar::minimize_scalar(fcn, &opts).unwrap();
+        let min_res = d1::minimize_scalar(fcn, &opts).unwrap();
         (min_res.xmin, min_res.fmin)
     }
     //}}}
