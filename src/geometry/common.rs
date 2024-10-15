@@ -294,7 +294,7 @@ pub trait Curve
             max_iter: opts.max_iter,
         };
 
-        let min_res = d1::minimize_scalar(f, &opts2).unwrap();
+        let min_res = d1::minimize(f, &opts2).unwrap();
         (min_res.xmin, min_res.fmin)
     }
     //}}}
@@ -333,7 +333,7 @@ pub trait Curve
             fval
         };
 
-        let min_res = d1::minimize_scalar(fcn, &opts).unwrap();
+        let min_res = d1::minimize(fcn, &opts).unwrap();
         (min_res.xmin, min_res.fmin)
     }
     //}}}

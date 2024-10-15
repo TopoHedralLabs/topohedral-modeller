@@ -175,8 +175,13 @@ fn main()
         plane_view();
 
 
-        // std::thread::sleep(std::time::Duration::from_millis(10000));
+        std::thread::sleep(std::time::Duration::from_millis(10000));
 
+    }
+    else {
+        //{{{ trace
+        info!("topoviewer executable not found");
+        //}}}
     }
     // bcurve_view()
     // plane_view()
