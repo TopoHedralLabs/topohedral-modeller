@@ -5,7 +5,7 @@ use crate::geometry::{Bcurve, BCURVE_DER_MAX};
 
 use topohedral_integrate::gauss;
 use topohedral_optimisation::d1::{minimize, 
-    MinimizeScalarOptions, MinimizeScalarReturns, Method, Bounds};
+    MinimizeOptions, MinimizeReturns, Method, Bounds};
 
 
 //{{{ impl<const D: usize> Bcurve<D>

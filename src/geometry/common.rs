@@ -287,7 +287,7 @@ pub trait Curve
             None => self.param_range()
         };
 
-        let opts2 = d1::MinimizeScalarOptions{
+        let opts2 = d1::MinimizeOptions{
             method: d1::Method::Bounded, 
             bounds: d1::Bounds::Pair(bounds), 
             tol: opts.tol,
@@ -320,7 +320,7 @@ pub trait Curve
             None => self.param_range()
         };
 
-        let opts = d1::MinimizeScalarOptions{
+        let opts = d1::MinimizeOptions{
             method: d1::Method::Bounded, 
             bounds: d1::Bounds::Pair(bounds), 
             tol:  1e-6,
